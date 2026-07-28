@@ -122,6 +122,20 @@ advertised "+16 points from crossing 20,000 datapoints" reproduced at +17.4. The
 above are reported as an audit layer that platform should ship, not as an argument that it
 does not work.
 
+### A retraction
+
+An earlier draft of that paper claimed the platform's advertised scaling benefit *reverses*,
+citing a matched pair where the score fell from 76 to 72. That was one unpaired comparison.
+Repeating it properly — within seed, across 13 seeds and 176 jobs — reversed the conclusion:
+13 of 13 positive, and the advertised gain reproduced at +17.4. **The claim is withdrawn.**
+
+It is recorded here rather than deleted because it is the same error this client exists to
+catch. Held-out category evaluations fire on roughly a third of jobs, so a single pair is one
+draw against a metric with sd 3–5 noise, on seeds whose difficulty spans 44.5 to 85.9 — about
+three times the effect being measured. A cross-seed comparison mostly reports which seeds
+landed in which arm. That is why `report.py` pairs within seed and uses a sign test on
+direction rather than a t-test on magnitude.
+
 ## License
 
 MIT.
