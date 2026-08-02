@@ -92,9 +92,11 @@ def _env() -> dict:
 
 def _login(env: dict) -> str:
     """Trade email + password for a fresh session JWT (the UI's own auth path)."""
-    email, pw = env.get("EMAIL", "carson@celabe.com"), env.get("PASSWORD", "")
-    if not pw:
-        sys.exit("PASSWORD not in .env (needed for --auth login)")
+    email, pw = env.get("EMAIL", ""), env.get("PASSWORD", "")
+    if not (email and pw):
+        sys.exit("EMAIL and PASSWORD must both be set in .env for --auth login. "
+                 "Prefer ADAPTION_API_KEY: it does not expire, whereas the JWT "
+                 "this returns is valid for one hour.")
     st, resp = _req("POST", "/auth/login", {"email": email, "password": pw}, key=None)
     tok = (resp or {}).get("access_token") or (resp or {}).get("token")
     if not (200 <= st < 300) or not tok:

@@ -124,16 +124,48 @@ polychart/
   supervise.sh          keeps the long-running daemons alive
 ```
 
-## Use
+## Setup
+
+Python 3.9+, standard library only. Nothing to install.
 
 ```bash
-cp .env.example .env     # add your own ADAPTION_API_KEY
-python3 -m polychart.audit      # every succeeded job, read and attributed
-python3 -m polychart.report     # paired within-seed analysis
+git clone https://github.com/rodriguescarson/adaption-autoscientist-api
+cd adaption-autoscientist-api
+cp .env.example .env
 ```
 
-`.env` is gitignored and has never been committed. No credential appears in this repository
-or its history.
+Fill in `.env`. Only the first line is required:
+
+| Variable | Required | Where to get it | Notes |
+|---|---|---|---|
+| `ADAPTION_API_KEY` | **yes** | Adaption dashboard → API keys. Starts `pt_live_` | Does not expire. Use this. |
+| `HF_TOKEN` | for HF publishing | huggingface.co/settings/tokens, **write** scope | Only needed by `export_ds.py` |
+| `KAGGLE_USERNAME`, `KAGGLE_KEY` | for Kaggle publishing | kaggle.com/settings → API → **Create New Token**, which downloads `kaggle.json` | Must be the **legacy 32-char key** from that file. The newer `KGAT_`-prefixed tokens are read-only and every upload returns 401. |
+| `EMAIL`, `PASSWORD` | no | your Adaption login | Only for `--auth login`, which trades them for a **one-hour** JWT. There is no reason to prefer this over the API key. |
+
+```bash
+python3 -m polychart.audit      # every succeeded job, read and attributed
+python3 -m polychart.report     # paired within-seed analysis
+python3 -m polychart.publish    # publish an Interface to a permanent URL
+```
+
+### Handling the credentials
+
+- `.env` is gitignored (`.env`, `.env.*`, with `!.env.example` re-included) and has
+  never been committed. Verify for yourself: `git log --all --name-only | grep -c '^\.env$'`
+  returns 0, and the full object history contains no `pt_live_`, `hf_`, `KGAT_`, `sk-`,
+  or JWT string.
+- No credential is hardcoded anywhere. `_env()` reads `.env` at call time; there are no
+  defaults to fall back on, so a missing variable fails loudly instead of silently using
+  someone else's.
+- Nothing is logged. The key goes into an `Authorization` header and is never printed,
+  written to `data/runs/`, or included in an error message.
+- `data/` is gitignored too, because run logs contain dataset and job identifiers tied
+  to your account.
+
+If you fork this and intend to commit, keep the `.gitignore` as-is. If you ever paste a
+key into a terminal that is being recorded, or into an issue, rotate it: Adaption keys are
+revocable from the same dashboard page that issues them.
 
 ## Note on the findings
 
