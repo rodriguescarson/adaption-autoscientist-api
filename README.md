@@ -31,6 +31,8 @@ This client remains useful because it covers surface the SDK does not:
 | **Per-job config → `training_experiment_id`** | — | ✅ |
 | **Publish a dataset to HuggingFace / Kaggle** | — | ✅ |
 | **Hosted Interface generation** (sessions → apps → versions) | — | ✅ |
+| **Publish an Interface to a permanent URL** | — | ✅ |
+| **Revive an Interface whose preview URL expired** | — | ✅ |
 | **App recommendations** | — | ✅ |
 | **Four-step fine-tune config wizard** | — | ✅ |
 
@@ -81,6 +83,25 @@ afterwards.
 across two vision bases, zero evaluations, one explicitly `skipped`. Text-only datasets on the
 same account received it normally.
 
+**8. A built Interface's URL expires, and nothing says so.** The build flow returns a
+`*.w.modal.host` preview URL. Ours answered 200 on 29 July and were refusing TCP
+connections by 2 August — DNS still resolving, container gone. There is no
+start/deploy/restart endpoint (all 404). Anything that quotes a preview URL is
+quoting a link with a few days of life.
+
+There is a publish step that fixes this, undocumented like the rest of the
+Interface surface:
+
+```
+GET  /chat/slug-available?slug=<slug>&appId=<app>    -> {"available": bool}
+POST /chat/sessions/<s>/apps/<a>/publish {"slug": …} -> {"url": "https://<slug>.adaptionlabs.app",
+                                                         "status": "active"}
+```
+
+That URL sits on Adaption's own domain and does not depend on a warm container.
+If a preview has already died, posting any message to the app rebuilds it and
+mints a fresh version, which `publish` then pins. `publish.py` does both.
+
 ---
 
 ## Modules
@@ -92,6 +113,7 @@ polychart/
   export_ds.py          publish a dataset to HuggingFace / Kaggle
   interfaces.py         hosted app generation (sessions → apps → build → versions)
   build_interfaces.py   build an Interface for every trained dataset
+  publish.py            publish an Interface to a permanent URL; revive an expired one
   queue_runner.py       condition queue honouring the 5-job cap and per-dataset limit
   category_pipeline.py  drives a dataset from processed to published
   harvest.py            re-polls late-arriving held-out evaluations
