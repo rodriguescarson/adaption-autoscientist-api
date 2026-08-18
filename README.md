@@ -7,9 +7,13 @@ shipped**. Stdlib only, no dependencies.
 It drove **176 fine-tuning jobs across 86 launches on 13 datasets** for the AutoScientist
 Challenge 2026, which is where the findings below come from.
 
-> The dataset generator and the study's category configurations live in a separate private
-> repository until the challenge closes on 10 August 2026. This repo is the platform client:
-> the part that is useful to other people regardless of what they train.
+> **The challenge is over.** The model this client trained took **1st place in Data &
+> Visualization** at the AutoScientist Challenge 2026 (Part 2), announced 18 August 2026.
+> Write-up, datasets, weights, and demo: https://carsonrodrigues.com/adaption-autoscientist
+>
+> The dataset generator and the study's category configurations stay in a separate private
+> repository, by choice rather than embargo. This repo is the platform client: the part that
+> is useful to other people regardless of what they train.
 
 ---
 
@@ -169,8 +173,15 @@ revocable from the same dashboard page that issues them.
 
 ## Note on the findings
 
-The full study (paired within-seed design, 13 seeds) is being written up as a paper. The
-headline is that **Adaptive Data augmentation genuinely works** — it improved the held-out
+The full study (paired within-seed design, 13 seeds) is written up in *Silent Failure in
+Automated Model Adaptation*, published as a Zenodo preprint (CC BY 4.0,
+[10.5281/zenodo.21939799](https://doi.org/10.5281/zenodo.21939799)) and under review at
+DMLR. The companion dataset paper is
+[10.5281/zenodo.21939874](https://doi.org/10.5281/zenodo.21939874). The preprint froze the
+11-seed interim (11 of 11, mean +14.3, p=0.001) at submission; two further paired seeds
+landed afterwards and both improved, which is the 13-seed figure quoted here.
+
+The headline is that **Adaptive Data augmentation genuinely works** — it improved the held-out
 category on 13 of 13 seeds, mean +14 points, two-sided sign test p=0.0002, and Adaption's
 advertised "+16 points from crossing 20,000 datapoints" reproduced at +17.4. The behaviours
 above are reported as an audit layer that platform should ship, not as an argument that it
